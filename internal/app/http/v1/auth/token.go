@@ -79,6 +79,11 @@ func (h *Handler) RefreshTokens(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.usecase.SetSessionUsed(ctx, guid, currentTime); err != nil {
+		http.Error(w, "ошибка при обновлении токена в БД", http.StatusInternalServerError)
+		return
+	}
+
 	host, _, _ := net.SplitHostPort(r.RemoteAddr)
 	createReq := dto.TokenCreateRequest{
 		Time:   currentTime,

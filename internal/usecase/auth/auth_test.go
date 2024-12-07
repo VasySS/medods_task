@@ -83,7 +83,7 @@ func TestUseCase_CreateRefreshToken(t *testing.T) {
 				},
 			},
 			setup: func(m *mocks.Repository, hm *mocks.Hasher, um *mocks.UUIDCreator) {
-				hm.On("GenerateFromPassword", "1.1.1.1guid").
+				hm.On("GenerateFromPassword", "MS4xLjEuMWd1aWQ=").
 					Return("bcrypt_hash", nil)
 
 				m.On("CreateUserSession", context.Background(), dto.UserSessionRepoCreate{
@@ -96,7 +96,7 @@ func TestUseCase_CreateRefreshToken(t *testing.T) {
 
 				um.On("New").Return("guid")
 			},
-			want:    "1.1.1.1guid",
+			want:    "MS4xLjEuMWd1aWQ=",
 			wantErr: assert.NoError,
 		},
 		{
@@ -109,7 +109,7 @@ func TestUseCase_CreateRefreshToken(t *testing.T) {
 				},
 			},
 			setup: func(_ *mocks.Repository, hm *mocks.Hasher, um *mocks.UUIDCreator) {
-				hm.On("GenerateFromPassword", "1.1.1.1guid").
+				hm.On("GenerateFromPassword", "MS4xLjEuMWd1aWQ=").
 					Return("", errors.New("ошибка хеширования"))
 
 				um.On("New").Return("guid")

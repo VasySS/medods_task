@@ -21,6 +21,7 @@ type UserSessionRepoGet struct {
 	UserID       string    `db:"user_id"`
 	UserIP       string    `db:"user_ip"`
 	RefreshToken string    `db:"refresh_token"`
+	Used         bool      `db:"used"`
 	CreatedAt    time.Time `db:"created_at"`
 	ExpiresAt    time.Time `db:"expires_at"`
 }

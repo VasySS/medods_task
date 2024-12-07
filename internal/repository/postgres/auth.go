@@ -37,3 +37,18 @@ func (r Repository) GetUserSession(ctx context.Context, guid string, createdAt t
 
 	return resp, nil
 }
+
+func (r Repository) SetSessionUsed(ctx context.Context, guid string, createdAt time.Time) error {
+	query := `
+		UPDATE user_sessions
+		SET used = true
+		WHERE user_id = $1 AND created_at = $2
+	`
+
+	_, err := r.pool.Exec(ctx, query, guid, createdAt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

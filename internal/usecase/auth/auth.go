@@ -4,6 +4,7 @@ import (
 	"auth_service/internal/config"
 	"auth_service/internal/dto"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"time"
@@ -15,6 +16,7 @@ import (
 type Repository interface {
 	CreateUserSession(ctx context.Context, req dto.UserSessionRepoCreate) error
 	GetUserSession(ctx context.Context, guid string, createdAt time.Time) (dto.UserSessionRepoGet, error)
+	SetSessionUsed(ctx context.Context, guid string, createdAt time.Time) error
 }
 
 //go:generate go run github.com/vektra/mockery/v2@v2.43.0 --name=Hasher
@@ -67,7 +69,10 @@ func (u UseCase) CreateRefreshToken(ctx context.Context, req dto.TokenCreateRequ
 
 	refreshToken := req.UserIP + u.uuidCreator.New()
 
-	refreshBcrypt, err := u.hasher.GenerateFromPassword(refreshToken)
+	refreshBase64 := make([]byte, base64.StdEncoding.EncodedLen(len(refreshToken)))
+	base64.StdEncoding.Encode(refreshBase64, []byte(refreshToken))
+
+	refreshBcrypt, err := u.hasher.GenerateFromPassword(string(refreshBase64))
 	if err != nil {
 		return "", fmt.Errorf("ошибка при создании хеша токена: %w", err)
 	}
@@ -84,7 +89,7 @@ func (u UseCase) CreateRefreshToken(ctx context.Context, req dto.TokenCreateRequ
 		return "", fmt.Errorf("ошибка при обновлении токена в БД: %w", err)
 	}
 
-	return refreshToken, nil
+	return string(refreshBase64), nil
 }
 
 func (u UseCase) CheckTokens(ctx context.Context, req dto.TokensCheckRequest) error {
@@ -104,6 +109,10 @@ func (u UseCase) CheckTokens(ctx context.Context, req dto.TokensCheckRequest) er
 		return fmt.Errorf("refresh токен истек")
 	}
 
+	if refreshRepo.Used {
+		return fmt.Errorf("refresh токен уже использован")
+	}
+
 	err = u.hasher.CompareHashAndPassword(refreshRepo.RefreshToken, req.RefreshToken)
 	if err != nil {
 		return fmt.Errorf("ошибка при проверке токена: %w", err)
@@ -118,6 +127,10 @@ func (u UseCase) CheckTokens(ctx context.Context, req dto.TokensCheckRequest) er
 	}
 
 	return nil
+}
+
+func (u UseCase) SetSessionUsed(ctx context.Context, guid string, createdAt time.Time) error {
+	return u.repo.SetSessionUsed(ctx, guid, createdAt)
 }
 
 func (u UseCase) verifyToken(tokenString string) (jwt.MapClaims, error) {

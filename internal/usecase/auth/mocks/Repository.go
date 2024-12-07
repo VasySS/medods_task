@@ -34,9 +34,9 @@ func (_m *Repository) CreateUserSession(ctx context.Context, req dto.UserSession
 	return r0
 }
 
-// GetUserSession provides a mock function with given fields: ctx, guid, _a2
-func (_m *Repository) GetUserSession(ctx context.Context, guid string, _a2 time.Time) (dto.UserSessionRepoGet, error) {
-	ret := _m.Called(ctx, guid, _a2)
+// GetUserSession provides a mock function with given fields: ctx, guid, createdAt
+func (_m *Repository) GetUserSession(ctx context.Context, guid string, createdAt time.Time) (dto.UserSessionRepoGet, error) {
+	ret := _m.Called(ctx, guid, createdAt)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetUserSession")
@@ -45,21 +45,39 @@ func (_m *Repository) GetUserSession(ctx context.Context, guid string, _a2 time.
 	var r0 dto.UserSessionRepoGet
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, time.Time) (dto.UserSessionRepoGet, error)); ok {
-		return rf(ctx, guid, _a2)
+		return rf(ctx, guid, createdAt)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string, time.Time) dto.UserSessionRepoGet); ok {
-		r0 = rf(ctx, guid, _a2)
+		r0 = rf(ctx, guid, createdAt)
 	} else {
 		r0 = ret.Get(0).(dto.UserSessionRepoGet)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, time.Time) error); ok {
-		r1 = rf(ctx, guid, _a2)
+		r1 = rf(ctx, guid, createdAt)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
+}
+
+// SetSessionUsed provides a mock function with given fields: ctx, guid, createdAt
+func (_m *Repository) SetSessionUsed(ctx context.Context, guid string, createdAt time.Time) error {
+	ret := _m.Called(ctx, guid, createdAt)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SetSessionUsed")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, time.Time) error); ok {
+		r0 = rf(ctx, guid, createdAt)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
