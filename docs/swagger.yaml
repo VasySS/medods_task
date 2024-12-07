@@ -1,0 +1,91 @@
+basePath: /v1/auth
+definitions:
+  auth_service_internal_dto.CreatedTokensResponse:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
+  auth_service_internal_dto.TokensRefreshRequest:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: Auth Service API
+  version: "0.1"
+paths:
+  /tokens:
+    get:
+      consumes:
+      - application/json
+      description: Генерирует новую пару access и refresh токенов на основе GUID.
+      parameters:
+      - description: Уникальный идентификатор (UUID)
+        in: query
+        name: guid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth_service_internal_dto.CreatedTokensResponse'
+        "400":
+          description: Некорректный GUID
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Генерация новых JWT токенов
+      tags:
+      - auth
+  /tokens/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет access и refresh токены, если токены являются валидными.
+      parameters:
+      - description: Уникальный идентификатор (UUID)
+        in: query
+        name: guid
+        required: true
+        type: string
+      - description: Access и Refresh токены
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth_service_internal_dto.TokensRefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth_service_internal_dto.CreatedTokensResponse'
+        "400":
+          description: Некорректный запрос или GUID
+          schema:
+            type: string
+        "401":
+          description: Некорректные токены
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Обновление JWT токенов
+      tags:
+      - auth
+swagger: "2.0"
