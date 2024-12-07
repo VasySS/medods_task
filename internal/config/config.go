@@ -10,4 +10,5 @@ const (
 	RefreshTokenExpiration = 31 * 24 * time.Hour
 	JWTSecret              = "123"
 	BackendAddr            = "0.0.0.0:8080"
+	PostgresDSN            = "postgres://postgres:postgres@localhost:5432/auth_service?sslmode=disable"
 )

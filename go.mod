@@ -26,9 +26,6 @@ require (
 	golang.org/x/tools v0.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-)
-
-require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/georgysavva/scany/v2 v2.1.3
 	github.com/golang-jwt/jwt/v5 v5.2.1

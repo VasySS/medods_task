@@ -22,8 +22,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	// TODO - move to config
-	pg, _ := postgres.New(context.Background(), "postgres://postgres:postgres@localhost:5432/medods?sslmode=disable")
+	pg, _ := postgres.New(context.Background(), config.PostgresDSN)
 	defer pg.Close()
 
 	r := appHTTP.NewRouter(pg)
